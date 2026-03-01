@@ -22,7 +22,7 @@ def prepare_data():
     
     df_clean = create_rolling_features(df_clean)
 
-    X, y, X_train, X_test, y_train, y_test = prepare_train_test_data(df_clean)
+    X, y, X_train, X_test, y_train, y_test, X_val, y_val = prepare_train_test_data(df_clean)
     
     df_clean.to_csv(os.path.join(folder_path_datasheets, 'electricity_final.csv'), index=False)
     X.to_csv(os.path.join(folder_path_datasheets, 'electricity_prices_features.csv'), index=False)
@@ -31,7 +31,8 @@ def prepare_data():
     X_test.to_csv(os.path.join(folder_path_datasheets, 'X_test.csv'), index=False)
     y_train.to_csv(os.path.join(folder_path_datasheets, 'y_train.csv'), index=False)
     y_test.to_csv(os.path.join(folder_path_datasheets, 'y_test.csv'), index=False)
-    
+    X_val.to_csv(os.path.join(folder_path_datasheets, 'X_val.csv'), index=False)
+    y_val.to_csv(os.path.join(folder_path_datasheets, 'y_val.csv'), index=False)
     print("Data preparation complete. Final datasets saved to CSV files.")
 
-    return df_clean, X, y, X_train, X_test, y_train, y_test, folder_path_visualizations
+    return df_clean, X, y, X_train, X_test, y_train, y_test, X_val, y_val, folder_path_visualizations

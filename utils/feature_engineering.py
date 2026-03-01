@@ -61,9 +61,17 @@ def prepare_train_test_data(df_ml):
     X = df_ml.drop(['value', 'utc'], axis=1)
     y = df_ml['value']
     
-    X_train, X_test, y_train, y_test = train_test_split(
+    X_temp, X_test, y_temp, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, shuffle=False
     )
     
-    return X, y, X_train, X_test, y_train, y_test
+    X_train, X_val, y_train, y_val = train_test_split(
+        X_temp, y_temp, test_size=0.25, random_state=42, shuffle=False
+    )
+    
+    print(f"Train size: {len(X_train)} ({len(X_train)/len(X)*100:.1f}%)")
+    print(f"Validation size: {len(X_val)} ({len(X_val)/len(X)*100:.1f}%)")
+    print(f"Test size: {len(X_test)} ({len(X_test)/len(X)*100:.1f}%)")
+    
+    return X, y, X_train, X_test, y_train, y_test, X_val, y_val
 

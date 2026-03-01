@@ -7,23 +7,26 @@ def setup_plotting_style():
     plt.style.use('seaborn-v0_8-darkgrid')
     sns.set_palette("husl")
 
-def plot_train_test_split(df_ml, y_train, y_test, folder_path):
+def plot_train_val_test_split(df_ml, y_train, y_test, y_val, folder_path):
     fig, ax = plt.subplots(figsize=(14, 5))
     train_dates = df_ml['utc'].iloc[:len(y_train)]
-    test_dates = df_ml['utc'].iloc[len(y_train):]
+    val_dates = df_ml['utc'].iloc[len(y_train):len(y_train)+len(y_val)]
+    test_dates = df_ml['utc'].iloc[len(y_train)+len(y_val):]
     
     ax.plot(train_dates, y_train.values, label='Train', linewidth=1, alpha=0.7)
+    ax.plot(val_dates, y_val.values, label='Validation', linewidth=1, alpha=0.7)
     ax.plot(test_dates, y_test.values, label='Test', linewidth=1, alpha=0.7)
-    ax.axvline(x=train_dates.iloc[-1], color='red', linestyle='--', alpha=0.5, label='Split Point')
+    ax.axvline(x=train_dates.iloc[-1], color='red', linestyle='--', alpha=0.5, label='Train/Validation Split')
+    ax.axvline(x=val_dates.iloc[-1], color='orange', linestyle='--', alpha=0.5, label='Validation/Test Split')
     
-    ax.set_title('Train/Test Split', fontsize=12, fontweight='bold')
+    ax.set_title('Train/Validation/Test Split', fontsize=12, fontweight='bold')
     ax.set_xlabel('Date')
     ax.set_ylabel('Price (EUR/MWh)')
     ax.legend()
     ax.tick_params(axis='x', rotation=45)
     
     plt.tight_layout()
-    plt.savefig(os.path.join(folder_path, 'train_test_split.png'), dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(folder_path, 'train_val_test_split.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
 def plot_rolling_statistics(df_ml, folder_path):
@@ -156,11 +159,11 @@ def plot_target_correlations(df_ml, X, folder_path):
     plt.savefig(os.path.join(folder_path, 'target_correlations.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
-def generate_all_plots(df_ml, X, y_train, y_test, folder_path):
+def generate_all_plots(df_ml, X, y_train, y_test, X_val, y_val, folder_path):
     print("\nGenerating plots:")
     setup_plotting_style()
     
-    plot_train_test_split(df_ml, y_train, y_test, folder_path)
+    plot_train_val_test_split(df_ml, y_train, y_test, y_val, folder_path)
     plot_rolling_statistics(df_ml, folder_path)
     plot_price_distribution(df_ml, folder_path)
     plot_price_by_hour(df_ml, folder_path)
