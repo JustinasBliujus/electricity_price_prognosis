@@ -150,11 +150,11 @@ class MLPModel(NeuralTimeSeriesModel):
         }
 
 def mlp(X, y, n_splits=5, test_size=0.2, epochs=100, batch_size=32,
-        X_scaler_class=RobustScaler, y_scaler_class=RobustScaler, scale_all=False):
+        X_scaler_class=RobustScaler, y_scaler_class=RobustScaler, scale_all=True):
     return MLPModel(epochs=epochs, batch_size=batch_size, X_scaler_class=X_scaler_class,
                     y_scaler_class=y_scaler_class, scale_all=scale_all,
                     n_splits=n_splits, test_size=test_size).run(X, y)
 
-def mlp_optuna(X, y, n_splits=5, test_size=0.2, n_trials=100, epochs=100):
+def mlp_optuna(X, y, n_splits=5, test_size=0.2, n_trials=100, epochs=100, scale_all=True):
     return MLPModel(epochs=epochs, n_splits=n_splits,
-                    test_size=test_size).run_optuna(X, y, n_trials=n_trials)
+                    test_size=test_size, scale_all=scale_all).run_optuna(X, y, n_trials=n_trials)

@@ -3,7 +3,7 @@ from .base_time_series_model import BaseTimeSeriesModel
 
 class NeuralTimeSeriesModel(BaseTimeSeriesModel):
     def __init__(self, X_scaler_class=RobustScaler, y_scaler_class=RobustScaler,
-                 scale_all=False, epochs=100, batch_size=32, **kwargs):
+                 scale_all=True, epochs=100, batch_size=32, **kwargs):
         super().__init__(**kwargs)
         self.X_scaler_class = X_scaler_class
         self.y_scaler_class = y_scaler_class

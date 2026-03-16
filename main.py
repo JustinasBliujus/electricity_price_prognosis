@@ -18,15 +18,15 @@ def main():
     #xgb(X.to_numpy(), y.to_numpy())
     #lstm(X.to_numpy(), y.to_numpy())
 
-    #get_baselines(X, y, y_train, y_test, X_train, X_test)
+    get_baselines(X, y, y_train, y_test, X_train, X_test)
 
     #mlp_test_scalers(X=X.to_numpy(), y=y.to_numpy(),scale_all=True)
     #mlp_test_scalers(X=X.to_numpy(), y=y.to_numpy(),scale_all=False)
 
     #lgbm_optuna(X.to_numpy(), y.to_numpy(), n_trials=250)
     #xgboost_optuna(X.to_numpy(), y.to_numpy(), n_trials=250)
-    mlp_optuna(X.to_numpy(), y.to_numpy(), n_trials=100)
-    lstm_optuna(X.to_numpy(), y.to_numpy(), n_trials=100)
+    #mlp_optuna(X.to_numpy(), y.to_numpy(), n_trials=100)
+    #lstm_optuna(X.to_numpy(), y.to_numpy(), n_trials=100)
 
 if __name__ == "__main__":
     main()
