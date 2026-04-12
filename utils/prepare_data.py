@@ -1,8 +1,7 @@
 import os
 from utils.data_preprocessing import load_raw_data, clean_data, handle_datetime_issues
 from utils.feature_engineering import (create_time_features, create_lag_features, 
-                               create_rolling_features,
-                               prepare_train_test_data)
+                               create_rolling_features, basic_analysis, prepare_train_test_data)
 
 def prepare_data():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -25,6 +24,8 @@ def prepare_data():
 
     X, y, X_train, X_test, y_train, y_test = prepare_train_test_data(df_clean)
     
+    basic_analysis_results = basic_analysis(df_clean)
+
     df_clean.to_csv(os.path.join(folder_path_datasheets, 'electricity_final.csv'), index=False)
     X.to_csv(os.path.join(folder_path_datasheets, 'electricity_prices_features.csv'), index=False)
     y.to_csv(os.path.join(folder_path_datasheets, 'electricity_prices_target.csv'), index=False)
@@ -32,6 +33,7 @@ def prepare_data():
     X_test.to_csv(os.path.join(folder_path_datasheets, 'X_test.csv'), index=False)
     y_train.to_csv(os.path.join(folder_path_datasheets, 'y_train.csv'), index=False)
     y_test.to_csv(os.path.join(folder_path_datasheets, 'y_test.csv'), index=False)
+    basic_analysis_results.to_csv(os.path.join(folder_path_datasheets, 'basic_data_analysis.csv'), index=False)
     print("Data preparation complete. Final datasets saved to CSV files.")
 
     return df_clean, X, y, X_train, X_test, y_train, y_test, folder_path_visualizations

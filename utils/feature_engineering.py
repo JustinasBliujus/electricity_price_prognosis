@@ -1,5 +1,7 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
+import numpy as np
+import os
 
 def create_time_features(df):
     df['hour'] = df['utc'].dt.hour
@@ -16,7 +18,7 @@ def create_time_features(df):
     
     return df
 
-def create_lag_features(df, lag_hours=[1, 2, 3, 6, 12, 24]):
+def create_lag_features(df, lag_hours=[1, 2, 3, 6, 12, 24, 48, 96, 168]):
     print("\nCREATING LAG FEATURES:")
     for lag in lag_hours:
         df[f'lag_{lag}'] = df['value'].shift(lag)
@@ -70,3 +72,15 @@ def prepare_train_test_data(df_ml):
     
     return X, y, X_train, X_test, y_train, y_test
 
+def basic_analysis(df):
+    results = df['value'].describe().loc[['mean', 'std', 'min', 'max']].to_frame()
+    results.index.name = 'statistic'
+    results.loc['max_to_average_ratio'] = results.loc['max']/results.loc['mean']
+    results.loc['std_as_mean_percentage'] = results.loc['std']/results.loc['mean']*100
+    results.loc['avg_weekday'] = df[df['weekend'] == 0]['value'].mean()
+    results.loc['avg_weekend'] = df[df['weekend'] == 1]['value'].mean()
+
+    print("Data analysis complete.")
+    
+
+    return results

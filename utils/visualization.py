@@ -2,10 +2,27 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import os
+from statsmodels.graphics.tsaplots import plot_acf
 
 def setup_plotting_style():
     plt.style.use('seaborn-v0_8-darkgrid')
     sns.set_palette("husl")
+
+def plot_autocorrelation(df, folder_path):
+    fig, ax = plt.subplots(figsize=(14, 5))
+    plot_acf(df['value'], lags=168, ax=ax)
+    
+    ax.set_xlabel('Poslinkis (h)', fontsize=14)
+    ax.set_ylabel('Autokoreliacija', fontsize=14)
+    ax.tick_params(axis='x', labelsize=12)
+    ax.tick_params(axis='y', labelsize=12)
+    
+    ax.set_xticks(range(0, 169, 12))
+    ax.set_title('')
+    ax.set_ylim(bottom=-0.2)
+    plt.tight_layout()
+    plt.savefig(os.path.join(folder_path, 'autocorrelation.png'), dpi=300, bbox_inches='tight')
+    plt.close()
 
 def plot_train_val_test_split(df_ml, y_train, y_test, folder_path):
     fig, ax = plt.subplots(figsize=(14, 5))
@@ -55,7 +72,7 @@ def plot_price_distribution(df_ml, folder_path):
 
 def plot_price_by_hour(df_ml, folder_path):
     fig, ax = plt.subplots(figsize=(12, 5))
-    df_ml.boxplot(column='value', by='hour', ax=ax) #1.5 * IQR ?
+    df_ml.boxplot(column='value', by='hour', ax=ax) #1.5 * IQR 
     ax.set_title('Price Distribution by Hour', fontsize=12, fontweight='bold')
     ax.set_xlabel('Hour of Day')
     ax.set_ylabel('Price (EUR/MWh)')
@@ -91,17 +108,44 @@ def plot_avg_price_by_day(df_ml, folder_path):
     plt.savefig(os.path.join(folder_path, 'avg_by_day.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
-def plot_weekday_vs_weekend(df_ml, folder_path):
-    fig, ax = plt.subplots(figsize=(7, 5))
-    weekend_data = [df_ml[df_ml['weekend'] == 0]['value'], 
-                    df_ml[df_ml['weekend'] == 1]['value']]
+def plot_avg_price_by_month(df_ml, folder_path):
+    fig, ax = plt.subplots(figsize=(10, 5))
+    avg_by_month = df_ml.groupby('month')['value'].mean()
+    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     
-    ax.boxplot(weekend_data, tick_labels=['Weekday', 'Weekend'])
-    ax.set_title('Weekday vs Weekend Prices', fontsize=12, fontweight='bold')
-    ax.set_ylabel('Price (EUR/MWh)')
+    ax.bar(months, avg_by_month.values, color='skyblue', edgecolor='black')
+    ax.set_xlabel('Mėnuo', fontsize=14)
+    ax.set_ylabel('Vidutinė kaina (EUR/MWh)', fontsize=14)
+    ax.tick_params(axis='x', labelsize=12)
+    ax.tick_params(axis='y', labelsize=12)
     
     plt.tight_layout()
-    plt.savefig(os.path.join(folder_path, 'weekday_weekend.png'), dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(folder_path, 'avg_by_month.png'), dpi=300, bbox_inches='tight')
+    plt.close()
+
+def plot_avg_month_and_weekday(df_ml, folder_path):
+    fig, ax = plt.subplots(figsize=(14, 5))
+
+    months = ['Sauis', 'Vasaris', 'Kovas', 'Balandis', 'Gegužė', 'Birželis', 'Liepa', 'Rugpjūtis', 'Rugsėjis', 'Spalis', 'Lapkritis', 'Gruodis']
+    avg_weekday = df_ml[df_ml['weekend'] == 0].groupby('month')['value'].mean()
+    avg_weekend = df_ml[df_ml['weekend'] == 1].groupby('month')['value'].mean()
+
+    x = range(len(months))
+    width = 0.4
+
+    ax.bar([i - width/2 for i in x], avg_weekday.values, width=width, color='skyblue', edgecolor='black', label='Darbo diena')
+    ax.bar([i + width/2 for i in x], avg_weekend.values, width=width, color='salmon', edgecolor='black', label='Savaitgalis')
+
+    ax.set_xticks(list(x))
+    ax.set_xticklabels(months)
+    ax.set_xlabel('Mėnuo', fontsize=14)
+    ax.set_ylabel('Vidutinė kaina (EUR/MWh)', fontsize=14)
+    ax.tick_params(axis='x', labelsize=11)
+    ax.tick_params(axis='y', labelsize=12)
+    ax.legend(fontsize=12)
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(folder_path, 'avg_month_weekday.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
 def plot_correlation_matrix(df_ml, X, folder_path):
@@ -160,13 +204,15 @@ def generate_all_plots(df_ml, X, y_train, y_test, folder_path):
     print("\nGenerating plots:")
     setup_plotting_style()
     
+    plot_autocorrelation(df_ml,folder_path)
     plot_train_val_test_split(df_ml, y_train, y_test, folder_path)
     plot_rolling_statistics(df_ml, folder_path)
     plot_price_distribution(df_ml, folder_path)
     plot_price_by_hour(df_ml, folder_path)
     plot_price_by_month(df_ml, folder_path)
     plot_avg_price_by_day(df_ml, folder_path)
-    plot_weekday_vs_weekend(df_ml, folder_path)
+    plot_avg_price_by_month(df_ml,folder_path)
+    plot_avg_month_and_weekday(df_ml,folder_path)
     plot_correlation_matrix(df_ml, X, folder_path)
     plot_target_correlations(df_ml, X, folder_path)
 

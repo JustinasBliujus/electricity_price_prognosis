@@ -6,3 +6,4 @@ __pycache__/
 .pytest_cache/
 datasheets/
 visualizations/
+analyze_data/

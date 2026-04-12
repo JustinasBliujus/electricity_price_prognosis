@@ -1,32 +1,34 @@
 from utils.prepare_data import prepare_data
 from utils.get_baselines import get_baselines
 from utils.visualization import generate_all_plots
-from mlp.mlp_test_scalers import mlp_test_scalers
-from lgbm.lgbm import lgbm, lgbm_optuna
-from xgb.xgboost import xgb, xgboost_optuna
-from mlp.mlp import mlp, mlp_optuna
-from lstm.lstm import lstm, lstm_optuna
+from lgbm.lgbm import lgbm_run, lgbm_optuna
+from xgb.xgboost import xgb_run, xgb_optuna
+from mlp.mlp import mlp_run, mlp_optuna
+from lstm.lstm import lstm_run, lstm_optuna
 
-#pip install tensorflow numpy matplotlib lightgbm xgboost pandas optuna scikit-learn seaborn
+#pip install tensorflow numpy matplotlib lightgbm xgboost pandas optuna scikit-learn seaborn plotly kaleido statsmodels
+
+N_SPLITS = 5
+TEST_SIZE = 0.2
+EPOCHS = 100
+N_TRIALS = 10
 
 def main():
     df_clean, X, y, X_train, X_test, y_train, y_test, folder_path_visualizations = prepare_data()
-
     #generate_all_plots(df_clean, X, y_train, y_test, folder_path_visualizations)
-    #mlp(X.to_numpy(),y.to_numpy())
-    #lgbm(X.to_numpy(),y.to_numpy(),objective='fair')
-    #xgb(X.to_numpy(), y.to_numpy())
-    #lstm(X.to_numpy(), y.to_numpy())
+    #get_baselines(X, y, y_train, y_test, X_train, X_test)
 
-    get_baselines(X, y, y_train, y_test, X_train, X_test)
+    #lgbm_run(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE)
+    #lgbm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, n_trials=N_TRIALS)
 
-    #mlp_test_scalers(X=X.to_numpy(), y=y.to_numpy(),scale_all=True)
-    #mlp_test_scalers(X=X.to_numpy(), y=y.to_numpy(),scale_all=False)
+    #xgb_run(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE)
+    xgb_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, n_trials=N_TRIALS)
 
-    #lgbm_optuna(X.to_numpy(), y.to_numpy(), n_trials=250)
-    #xgboost_optuna(X.to_numpy(), y.to_numpy(), n_trials=250)
-    #mlp_optuna(X.to_numpy(), y.to_numpy(), n_trials=100)
-    #lstm_optuna(X.to_numpy(), y.to_numpy(), n_trials=100)
+    #mlp_run(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS)
+    mlp_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS)
+
+    #lstm_run(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS)
+    lstm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS)
 
 if __name__ == "__main__":
     main()
