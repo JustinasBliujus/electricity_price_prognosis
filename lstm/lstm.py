@@ -2,6 +2,7 @@ import tensorflow as tf
 from time_series_models.neural_time_series_model import NeuralTimeSeriesModel
 from sklearn.preprocessing import RobustScaler
 import os
+from datetime import datetime
 
 EarlyStopping = tf.keras.callbacks.EarlyStopping
 Sequential    = tf.keras.models.Sequential
@@ -23,8 +24,16 @@ class LSTMModel(NeuralTimeSeriesModel):
                  epochs=None,
                  n_splits=None,
                  test_size=None,
+                 activation=None,
                  baseline=17.120583933251048,
-                 output_dir=os.path.join(os.path.dirname(os.path.abspath(__file__)), "lstm")):
+                 output_dir=None):
+
+        date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        if output_dir is None:
+            output_dir = os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                f"lstm_{date_str}"
+            )
 
         os.makedirs(output_dir, exist_ok=True)
 
@@ -37,6 +46,7 @@ class LSTMModel(NeuralTimeSeriesModel):
         self.dropout_per_layer = dropout_per_layer
         self.dense_units       = dense_units
         self.learning_rate     = learning_rate
+        self.activation        = activation
 
     def build_model(self, n_features):
         return self.build_lstm(n_features)
@@ -48,7 +58,7 @@ class LSTMModel(NeuralTimeSeriesModel):
             layers.append(LSTM(self.units_per_layer[i], return_sequences=return_seq))
             layers.append(Dropout(self.dropout_per_layer[i]))
 
-        layers.append(Dense(self.dense_units, activation="relu"))
+        layers.append(Dense(self.dense_units, activation=self.activation))
         layers.append(Dense(1))
 
         model = Sequential(layers)
@@ -64,10 +74,10 @@ class LSTMModel(NeuralTimeSeriesModel):
     def suggest_hyperparams(self, trial):
         self.n_lstm_layers     = trial.suggest_int("n_lstm_layers", 1, 3)
         self.batch_size        = trial.suggest_categorical("batch_size", [16, 32, 64])
-        self.learning_rate     = trial.suggest_float("learning_rate", 0.0001, 0.3, log=True)
+        self.learning_rate     = trial.suggest_float("learning_rate", 0.001, 0.3, log=True)
         self.dense_units       = trial.suggest_int("dense_units", 16, 128, step=16)
         self.units_per_layer   = [trial.suggest_int(f"units_{i}", 32, 256, step=32) for i in range(self.n_lstm_layers)]
-        self.dropout_per_layer = [trial.suggest_float(f"dropout_{i}", 0.1, 0.6) for i in range(self.n_lstm_layers)]
+        self.dropout_per_layer = [trial.suggest_float(f"dropout_{i}", 0.1, 0.5) for i in range(self.n_lstm_layers)]
 
     def apply_best_params(self, p):
         self.n_lstm_layers     = p["n_lstm_layers"]
@@ -77,10 +87,10 @@ class LSTMModel(NeuralTimeSeriesModel):
         self.units_per_layer   = [p[f"units_{i}"] for i in range(p["n_lstm_layers"])]
         self.dropout_per_layer = [p[f"dropout_{i}"] for i in range(p["n_lstm_layers"])]
 
-def lstm_run(X=None, y=None, n_splits=None, test_size=None, epochs=None):
-    model = LSTMModel(epochs=epochs, n_splits=n_splits, test_size=test_size)
+def lstm_run(X=None, y=None, n_splits=None, test_size=None, epochs=None, activation='relu'):
+    model = LSTMModel(epochs=epochs, n_splits=n_splits, test_size=test_size, activation=activation)
     return model.run(X, y)
 
-def lstm_optuna(X, y, n_splits=None, test_size=None, epochs=None, n_trials=None):
+def lstm_optuna(X, y, n_splits=None, test_size=None, epochs=None, n_trials=None, activation='relu'):
     return LSTMModel(epochs=epochs, n_splits=n_splits,
-                     test_size=test_size).run_optuna(X, y, n_trials=n_trials)
+                     test_size=test_size, activation=activation).run_optuna(X, y, n_trials=n_trials)
