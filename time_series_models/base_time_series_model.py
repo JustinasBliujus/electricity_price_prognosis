@@ -111,6 +111,7 @@ class BaseTimeSeriesModel:
     
     def run_optuna(self, X, y, n_trials=None):
         X_cv, X_test, y_cv, y_test = self.split(X, y)
+        early_stop = EarlyStoppingCallback(patience=100)
 
         def objective(trial):
             self.suggest_hyperparams(trial)
@@ -123,7 +124,7 @@ class BaseTimeSeriesModel:
             return np.mean(fold_rmses)
 
         study = optuna.create_study(direction="minimize")
-        study.optimize(objective, n_trials=n_trials)
+        study.optimize(objective, n_trials=n_trials,callbacks=[early_stop])
         print("Best params:", study.best_params)
         print(f"Best CV RMSE: {study.best_value:.4f}")
 
@@ -166,3 +167,20 @@ class BaseTimeSeriesModel:
 
     def apply_best_params(self, params):
         raise NotImplementedError
+    
+class EarlyStoppingCallback:
+    def __init__(self, patience=100):
+        self.patience = patience
+        self.best_value = None
+        self.no_improve_count = 0
+
+    def __call__(self, study, trial):
+        if self.best_value is None or study.best_value < self.best_value:
+            self.best_value = study.best_value
+            self.no_improve_count = 0
+        else:
+            self.no_improve_count += 1
+
+        if self.no_improve_count >= self.patience:
+            print(f"Stopping early after {self.patience} trials without improvement.")
+            study.stop()

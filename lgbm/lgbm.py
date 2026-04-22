@@ -1,6 +1,7 @@
 from time_series_models.tree_time_series_model import TreeTimeSeriesModel
 import lightgbm as lgbm
 import os
+from datetime import datetime
 
 class LGBMModel(TreeTimeSeriesModel):
     def __init__(self,
@@ -16,8 +17,16 @@ class LGBMModel(TreeTimeSeriesModel):
                  n_splits=None,
                  test_size=None,
                  baseline=27.586892100211507,
-                 output_dir=os.path.join(os.path.dirname(os.path.abspath(__file__)), "lgbm")):
+                 output_dir=None):
 
+        date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+        if output_dir is None:
+            output_dir = os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                f"lgbm_{date_str}"
+            )
+            
         os.makedirs(output_dir, exist_ok=True)
 
         super().__init__(n_splits=n_splits, test_size=test_size,

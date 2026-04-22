@@ -5,7 +5,7 @@ from lgbm.lgbm import lgbm_run, lgbm_optuna
 from xgb.xgboost import xgb_run, xgb_optuna
 from mlp.mlp import mlp_run, mlp_optuna
 from lstm.lstm import lstm_run, lstm_optuna
-from plot_optimizations import plot_optuna_results
+
 #pip install tensorflow numpy matplotlib lightgbm xgboost pandas optuna scikit-learn seaborn plotly kaleido statsmodels
 
 import numpy as np
@@ -31,7 +31,7 @@ def main():
     #plot_optuna_results("lgbm/lgbm/optuna_results/optuna_trials.csv")
 
     #xgb_run(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE)
-    xgb_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, n_trials=N_TRIALS,objective="reg:pseudohubererror")
+    xgb_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, n_trials=N_TRIALS,objective="reg:fair")
 
     #mlp_run(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS)
     #mlp_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS,activation="sigmoid")
