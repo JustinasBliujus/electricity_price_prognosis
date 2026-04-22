@@ -3,7 +3,6 @@ from time_series_models.neural_time_series_model import NeuralTimeSeriesModel
 from sklearn.preprocessing import RobustScaler, MinMaxScaler
 EarlyStopping = tf.keras.callbacks.EarlyStopping
 import os
-from datetime import datetime
 
 Sequential = tf.keras.models.Sequential
 Dense      = tf.keras.layers.Dense
@@ -24,15 +23,7 @@ class MLPModel(NeuralTimeSeriesModel):
                  n_splits=None,
                  test_size=None,
                  baseline=18.411363238454967,
-                 output_dir=None):
-
-        date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-
-        if output_dir is None:
-            output_dir = os.path.join(
-                os.path.dirname(os.path.abspath(__file__)),
-                f"mlp_{date_str}"
-            )
+                 output_dir=os.path.join(os.path.dirname(os.path.abspath(__file__)), "mlp")):
 
         os.makedirs(output_dir, exist_ok=True)
 
@@ -80,6 +71,6 @@ def mlp_run(X=None, y=None, n_splits=None, test_size=None, epochs=None):
     model = MLPModel(epochs=epochs,n_splits=n_splits,test_size=test_size)
     return model.run(X, y)
 
-def mlp_optuna(X, y, n_splits=None, test_size=None, epochs=None, n_trials=None, activation="relu"):
+def mlp_optuna(X, y, n_splits=None, test_size=None, epochs=None, n_trials=None):
     return MLPModel(epochs=epochs, n_splits=n_splits,
-                    test_size=test_size, activation=activation).run_optuna(X, y, n_trials=n_trials)
+                    test_size=test_size).run_optuna(X, y, n_trials=n_trials)
