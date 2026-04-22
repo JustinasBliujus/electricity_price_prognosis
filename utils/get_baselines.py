@@ -24,18 +24,17 @@ def plot_fold_splits(X, y, n_splits, test_size, output_dir):
     fig, ax = plt.subplots(figsize=(14, 6))
 
     for fold, (train_idx, val_idx) in enumerate(tscv.split(X_cv)):
-        ax.barh(fold + 1, len(train_idx), left=train_idx[0], color='steelblue', alpha=0.6, label='Train' if fold == 0 else "")
-        ax.barh(fold + 1, len(val_idx),   left=val_idx[0],   color='orange',    alpha=0.8, label='Val'   if fold == 0 else "")
+        ax.barh(fold + 1, len(train_idx), left=train_idx[0], color='steelblue', alpha=0.6, label='Mokymo duomenys' if fold == 0 else "")
+        ax.barh(fold + 1, len(val_idx),   left=val_idx[0],   color='orange',    alpha=0.8, label='Validacijos duomenys'   if fold == 0 else "")
         ax.text(train_idx[0] + len(train_idx) / 2, fold + 1, f'{len(train_idx)}', va='center', ha='center', fontsize=8, color='white')
         ax.text(val_idx[0]   + len(val_idx)   / 2, fold + 1, f'{len(val_idx)}',   va='center', ha='center', fontsize=8, color='black')
 
-    ax.barh(0, len(X) - split_idx, left=split_idx, color='red', alpha=0.6, label='Test')
+    ax.barh(0, len(X) - split_idx, left=split_idx, color='red', alpha=0.6, label='Testavimo duomenys')
     ax.text(split_idx + (len(X) - split_idx) / 2, 0, f'{len(X) - split_idx}', va='center', ha='center', fontsize=8, color='white')
 
     ax.set_yticks(range(0, n_splits + 1))
-    ax.set_yticklabels(['Test'] + [f'Fold {i+1}' for i in range(n_splits)])
-    ax.set_xlabel("Sample index")
-    ax.set_title("Time Series Split — Train / Validation / Test")
+    ax.set_yticklabels(['Testavimo dalis'] + [f'{i+1} Dalis' for i in range(n_splits)])
+    ax.set_xlabel("Duomenų imtis (chronologiškai)")
     ax.legend()
     ax.grid(True, alpha=0.3, axis='x')
     plt.tight_layout()
