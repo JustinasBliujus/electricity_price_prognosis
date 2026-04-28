@@ -29,10 +29,8 @@ class NeuralTimeSeriesModel(BaseTimeSeriesModel):
         X_scaler = self.X_scaler_class()
         y_scaler = self.y_scaler_class()
 
-        X_train_s = X_train
-        X_val_s   = X_val
-        X_train_s = self.reshape_input(X_scaler.fit_transform(X_train))
-        X_val_s   = self.reshape_input(X_scaler.transform(X_val))
+        X_train_s = X_scaler.fit_transform(X_train)
+        X_val_s   = X_scaler.transform(X_val)
 
         y_train_s = y_scaler.fit_transform(y_train.reshape(-1, 1)).flatten()
         y_val_s   = y_scaler.transform(y_val.reshape(-1, 1)).flatten()
@@ -49,9 +47,6 @@ class NeuralTimeSeriesModel(BaseTimeSeriesModel):
 
         pred = y_scaler.inverse_transform(model.predict(X_val_s))
         return pred, y_val
-
-    def reshape_input(self, X):
-        return X
 
     def fit_final(self, X_cv, y_cv, X_test, y_test):
         X_scaler = self.X_scaler_class()

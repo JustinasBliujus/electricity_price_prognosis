@@ -10,6 +10,8 @@ from lstm.lstm import lstm_run, lstm_optuna
 
 import numpy as np
 from sklearn.metrics import mean_absolute_error, mean_squared_error
+import os
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "1"
 
 N_SPLITS = 5
 TEST_SIZE = 0.2
@@ -31,27 +33,29 @@ def main():
     #plot_optuna_results("lgbm/lgbm/optuna_results/optuna_trials.csv")
 
     #xgb_run(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE)
-    xgb_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, n_trials=N_TRIALS,objective="reg:fair")
+    #xgb_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, n_trials=N_TRIALS,objective="reg:pseudohubererror")
 
     #mlp_run(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS)
-    #mlp_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS,activation="sigmoid")
+    #mlp_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS,activation="relu")
     #mlp_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS,activation="linear")
+    #mlp_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS,activation="tanh")
+    #mlp_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS,activation="sigmoid")
     
     #lstm_run(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS)
+    
+    lstm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS, activation="relu")
+    #lstm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS, activation="linear")
     #lstm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS, activation="tanh")
     #lstm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS, activation="sigmoid")
-    #lstm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS, activation="linear")
 
-    #TODO make xgboost custom fair
-    #TODO run sigmoid linear on mlp
-    #TODO run lstm on tanh sigmoid linear
-
-    #TODO then having best models
+    #TODO LSTM time step?
     #
     #TODO CV mse, mse mae rMae on test?
     
     #TODO do feature importance analysis SHAP or inner models feature importance
     #TODO check when do models fail to prognose, hours,days...
     #TODO model ensemble
+    
+    #TODO do t+24 models + ensemble
 if __name__ == "__main__":
     main()

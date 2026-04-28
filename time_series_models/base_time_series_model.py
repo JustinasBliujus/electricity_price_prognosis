@@ -111,13 +111,14 @@ class BaseTimeSeriesModel:
     
     def run_optuna(self, X, y, n_trials=None):
         X_cv, X_test, y_cv, y_test = self.split(X, y)
-        early_stop = EarlyStoppingCallback(patience=100)
-
+        early_stop = EarlyStoppingCallback(patience=20)
+        tscv = TimeSeriesSplit(n_splits=self.n_splits)
+        fold_indices = list(tscv.split(X_cv))
+        
         def objective(trial):
             self.suggest_hyperparams(trial)
-            tscv = TimeSeriesSplit(n_splits=self.n_splits)
             fold_rmses = []
-            for train_idx, val_idx in tscv.split(X_cv):
+            for train_idx, val_idx in fold_indices:
                 pred, actual = self.fit_fold(X_cv[train_idx], y_cv[train_idx],
                                                     X_cv[val_idx],   y_cv[val_idx])
                 fold_rmses.append(np.sqrt(mean_squared_error(actual, pred)))
