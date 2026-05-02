@@ -103,7 +103,8 @@ class BaseTimeSeriesModel:
             "mean_cv_rmae": mean_cv_rmae,
             "predictions":  pred,
             "actuals":      actual,
-            "results":      results
+            "results":      results,
+            "model":        self 
         }
     
     def fit_final(self, X_cv, y_cv, X_test, y_test):
@@ -111,7 +112,7 @@ class BaseTimeSeriesModel:
     
     def run_optuna(self, X, y, n_trials=None):
         X_cv, X_test, y_cv, y_test = self.split(X, y)
-        early_stop = EarlyStoppingCallback(patience=20)
+        early_stop = EarlyStoppingCallback(patience=100)
         tscv = TimeSeriesSplit(n_splits=self.n_splits)
         fold_indices = list(tscv.split(X_cv))
         
@@ -171,6 +172,36 @@ class BaseTimeSeriesModel:
 
     def apply_best_params(self, params):
         raise NotImplementedError
+    
+    def plot_fold_predictions(self, X, y, fold_number=2):
+        X_cv, X_test, y_cv, y_test = self.split(X, y)
+        tscv = TimeSeriesSplit(n_splits=self.n_splits)
+        fold_indices = list(tscv.split(X_cv))
+
+        train_idx, val_idx = fold_indices[fold_number - 1]
+        if hasattr(X_cv, 'iloc'):
+            X_train, X_val = X_cv.iloc[train_idx], X_cv.iloc[val_idx]
+            y_train, y_val = y_cv.iloc[train_idx], y_cv.iloc[val_idx]
+        else:
+            X_train, X_val = X_cv[train_idx], X_cv[val_idx]
+            y_train, y_val = y_cv[train_idx], y_cv[val_idx]
+
+        pred, actual = self.fit_fold(X_train, y_train, X_val, y_val)
+        pred   = np.array(pred).flatten()
+        actual = np.array(actual).flatten()
+
+        plt.figure(figsize=(12, 5))
+        plt.plot(actual, label="Realios reikšmės", linewidth=1)
+        plt.plot(pred,   label="Prognozė", linewidth=1, linestyle="--")
+        plt.xlabel("Imtys")
+        plt.ylabel("Reikšmė")
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
+        path = os.path.join(self.results_dir, f"fold_{fold_number}_predictions.png")
+        plt.savefig(path, dpi=150)
+        print(f"Fold predictions saved to {path}")
+        plt.close()
     
 class EarlyStoppingCallback:
     def __init__(self, patience=100):

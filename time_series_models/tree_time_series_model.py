@@ -15,6 +15,7 @@ class TreeTimeSeriesModel(BaseTimeSeriesModel):
     def fit_final(self, X_cv, y_cv, X_test, y_test):
         model  = self.build_model()
         model.fit(X_cv, y_cv)
+        self.model = model
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", UserWarning)
             pred = model.predict(X_test)

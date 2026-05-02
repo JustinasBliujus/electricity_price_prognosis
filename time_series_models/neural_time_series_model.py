@@ -58,6 +58,6 @@ class NeuralTimeSeriesModel(BaseTimeSeriesModel):
 
         model = self.build_model(X_cv_s.shape[-1])
         model.fit(X_cv_s, y_cv_s, epochs=self.epochs, batch_size=self.batch_size, verbose=0)
-
+        self.model = model
         pred = y_scaler.inverse_transform(model.predict(X_test_s))
         return pred, y_test

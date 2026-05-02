@@ -6,17 +6,17 @@ from datetime import datetime
 
 class XGBModel(TreeTimeSeriesModel):
     def __init__(self,
-                 objective='reg:squarederror',
-                 n_estimators=500,
-                 learning_rate=0.01,
-                 max_depth=6,
-                 colsample_bytree=0.8,
-                 min_child_weight=1,
-                 huber_slope=4,
-                 fair_slope=1,
+                 objective='reg:pseudohubererror',
+                 n_estimators=400,
+                 learning_rate=0.01407311,
+                 max_depth=10,
+                 colsample_bytree=0.84976624,
+                 min_child_weight=31,
+                 huber_slope=59.9922439,
+                 fair_slope=16.969664412722437,
                  n_splits=None,
                  test_size=None,
-                 baseline=35.97867655711516,
+                 baseline=25.806314985359016,
                  output_dir=None):
         
         date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -32,6 +32,7 @@ class XGBModel(TreeTimeSeriesModel):
         super().__init__(n_splits=n_splits, test_size=test_size,
                          output_dir=output_dir, baseline=baseline)
 
+        self.feature_names         = feature_names
         self.objective        = objective
         self.n_estimators     = n_estimators
         self.learning_rate    = learning_rate
@@ -89,14 +90,14 @@ class XGBModel(TreeTimeSeriesModel):
         if self.objective == "reg:fair":
             self.fair_slope   = p.get("fair_slope", self.fair_slope)
 
-def xgb_run(X=None, y=None, n_splits=None, test_size=None, objective="reg:squarederror"):
-    model = XGBModel(n_splits=n_splits, test_size=test_size, objective=objective)
-    print(model.__dict__)
-    return model.run(X, y)
+def xgb_run(X=None, y=None, n_splits=None, test_size=None):
+    model = XGBModel(n_splits=n_splits, test_size=test_size, feature_names = X.columns.tolist())
+    results = model.run(X.to_numpy(), y.to_numpy())
+    model.plot_fold_predictions(X, y, fold_number=2)
+    return results
 
-def xgb_optuna(X, y, n_splits=None, test_size=None, n_trials=None, objective="reg:squarederror"):
-    return XGBModel(n_splits=n_splits,test_size=test_size, objective=objective).run_optuna(X, y, n_trials=n_trials)
-
+def xgb_optuna(X, y, n_splits=None, test_size=None, n_trials=None, objective="reg:fair"):
+    return XGBModel(n_splits=n_splits,test_size=test_size, objective=objective,feature_names = X.columns.tolist()).run_optuna(X, y, n_trials=n_trials)
 
 def fair_objective(y_true, y_pred, c):
     x = y_pred - y_true

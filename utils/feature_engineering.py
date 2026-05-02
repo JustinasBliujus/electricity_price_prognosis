@@ -82,6 +82,6 @@ def basic_analysis(df):
     results.loc['avg_weekend'] = df[df['weekend'] == 1]['value'].mean()
 
     print("Data analysis complete.")
-    
 
+    
     return results

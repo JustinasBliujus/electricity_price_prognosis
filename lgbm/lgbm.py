@@ -5,18 +5,18 @@ from datetime import datetime
 
 class LGBMModel(TreeTimeSeriesModel):
     def __init__(self,
-                 objective='huber',
-                 n_estimators=974,
-                 learning_rate=0.009069734227624547,
-                 max_depth=9,
-                 num_leaves=76,
-                 feature_fraction=0.7733268704526309,
-                 min_child_samples=40,
-                 alpha=59.96250921401762,
+                 objective='regression',
+                 n_estimators=500,
+                 learning_rate=0.01,
+                 max_depth=6,
+                 num_leaves=32,
+                 feature_fraction=0.8,
+                 min_child_samples=500,
+                 alpha=15,
                  fair_c=7,
                  n_splits=None,
                  test_size=None,
-                 baseline=27.586892100211507,
+                 baseline=36.09601750524018,
                  output_dir=None):
 
         date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -85,12 +85,12 @@ class LGBMModel(TreeTimeSeriesModel):
         if self.objective == "fair":
             self.fair_c = p["fair_c"]
 
-def lgbm_run(X=None, y=None, n_splits=None, test_size=None):
-    model = LGBMModel(n_splits=n_splits, test_size=test_size)
+def lgbm_run(X=None, y=None, n_splits=None, test_size=None, objective='regression'):
+    model = LGBMModel(n_splits=n_splits, test_size=test_size, objective=objective)
     print(model.__dict__)
     return model.run(X, y)
     
 
-def lgbm_optuna(X, y, n_splits=None, test_size=None, n_trials=None, objective='regression'):
+def lgbm_optuna(X, y, n_splits=None, test_size=None, n_trials=None, objective='huber'):
     return LGBMModel(n_splits=n_splits,
                      test_size=test_size, objective=objective).run_optuna(X, y, n_trials=n_trials)

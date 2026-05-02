@@ -135,31 +135,76 @@ def plot_fold_detail(X, y, n_splits, test_size, fold_n, output_dir, timestamps=N
             plt.savefig(os.path.join(output_dir, f"fold_{fold_n}_detail.png"))
             plt.close()
             break
-
+        
 def get_baselines(X, y, y_train, y_test, X_train, X_test):
     plot_fold_splits(X, y, N_SPLITS, TEST_SIZE, OUTPUT_DIR)
+
     X = X.to_numpy()
     y = y.to_numpy()
+
     plot_fold_detail(X, y, N_SPLITS, TEST_SIZE, fold_n=2, output_dir=OUTPUT_DIR)
     plot_fold_detail(X, y, N_SPLITS, TEST_SIZE, fold_n=3, output_dir=OUTPUT_DIR)
 
-    baseline_results_train = calculate_baseline_models(X_train,y_train)
-    baseline_results_test = calculate_baseline_models(X_test,y_test)
+    baseline_results        = calculate_baseline_models(y_train, y_test, X_test)
+    lgbm_results_regression = lgbm_run(X, y, n_splits=N_SPLITS, test_size=TEST_SIZE, objective='regression')
+    lgbm_results_huber      = lgbm_run(X, y, n_splits=N_SPLITS, test_size=TEST_SIZE, objective='huber')
+    lgbm_results_fair       = lgbm_run(X, y, n_splits=N_SPLITS, test_size=TEST_SIZE, objective='fair')
+    xgb_results_regression  = xgb_run(X, y, n_splits=N_SPLITS, test_size=TEST_SIZE, objective='reg:squarederror')
+    xgb_results_huber       = xgb_run(X, y, n_splits=N_SPLITS, test_size=TEST_SIZE, objective='reg:pseudohubererror')
+    mlp_results             = mlp_run(X, y, n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS)
+    lstm_results            = lstm_run(X, y, n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS)
+
+    plot_cv_results("lgbm_regression", lgbm_results_regression["results"], OUTPUT_DIR)
+    plot_cv_results("lgbm_huber",      lgbm_results_huber["results"],      OUTPUT_DIR)
+    plot_cv_results("lgbm_fair",       lgbm_results_fair["results"],       OUTPUT_DIR)
+    plot_cv_results("xgb_regression",  xgb_results_regression["results"],  OUTPUT_DIR)
+    plot_cv_results("xgb_huber",       xgb_results_huber["results"],       OUTPUT_DIR)
+    plot_cv_results("mlp",             mlp_results["results"],             OUTPUT_DIR)
+    plot_cv_results("lstm",            lstm_results["results"],            OUTPUT_DIR)
+
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     rows = [
-        {"date": now, "split": "train", "model": "last_value",  "rmse": baseline_results_train["last_value"][1]},
-        {"date": now, "split": "train", "model": "mean",  "rmse": baseline_results_train["mean"][1]},
-        {"date": now, "split": "train", "model": "rolling_mean","rmse": baseline_results_train["rolling_mean"][1]},
-        {"date": now, "split": "test",  "model": "last_value",  "rmse": baseline_results_test["last_value"][1]},
-        {"date": now, "split": "test",  "model": "mean",  "rmse": baseline_results_test["mean"][1]},
-        {"date": now, "split": "test",  "model": "rolling_mean","rmse": baseline_results_test["rolling_mean"][1]},
+        {"date": now, "model": "last_value",      "rmse": baseline_results["last_value"][1]},
+        {"date": now, "model": "train_mean",       "rmse": baseline_results["train_mean"][1]},
+        {"date": now, "model": "rolling_mean",     "rmse": baseline_results["rolling_mean"][1]},
+        {"date": now, "model": "lgbm_regression",  "rmse": lgbm_results_regression["test_rmse"], "mean_cv_rmse": lgbm_results_regression["mean_cv_rmse"]},
+        {"date": now, "model": "lgbm_huber",       "rmse": lgbm_results_huber["test_rmse"],       "mean_cv_rmse": lgbm_results_huber["mean_cv_rmse"]},
+        {"date": now, "model": "lgbm_fair",        "rmse": lgbm_results_fair["test_rmse"],        "mean_cv_rmse": lgbm_results_fair["mean_cv_rmse"]},
+        {"date": now, "model": "xgb_regression",   "rmse": xgb_results_regression["test_rmse"],   "mean_cv_rmse": xgb_results_regression["mean_cv_rmse"]},
+        {"date": now, "model": "xgb_huber",        "rmse": xgb_results_huber["test_rmse"],        "mean_cv_rmse": xgb_results_huber["mean_cv_rmse"]},
+        {"date": now, "model": "mlp",              "rmse": mlp_results["test_rmse"],              "mean_cv_rmse": mlp_results["mean_cv_rmse"]},
+        {"date": now, "model": "lstm",             "rmse": lstm_results["test_rmse"],             "mean_cv_rmse": lstm_results["mean_cv_rmse"]},
     ]
+
+    model_results = {
+        "lgbm_regression": lgbm_results_regression["results"],
+        "lgbm_huber":      lgbm_results_huber["results"],
+        "lgbm_fair":       lgbm_results_fair["results"],
+        "xgb_regression":  xgb_results_regression["results"],
+        "xgb_huber":       xgb_results_huber["results"],
+        "mlp":             mlp_results["results"],
+        "lstm":            lstm_results["results"],
+    }
+
+    fold_rows = []
+    for model_name, results in model_results.items():
+        for r in results:
+            fold_rows.append({"date": now, "model": model_name, **r})
+
+    fold_csv_path = os.path.join(OUTPUT_DIR, "baseline_fold_results.csv")
+    if os.path.exists(fold_csv_path):
+        df_folds = pd.concat([pd.read_csv(fold_csv_path), pd.DataFrame(fold_rows)], ignore_index=True)
+    else:
+        df_folds = pd.DataFrame(fold_rows)
+    df_folds.to_csv(fold_csv_path, index=False)
 
     if os.path.exists(CSV_PATH):
         df = pd.concat([pd.read_csv(CSV_PATH), pd.DataFrame(rows)], ignore_index=True)
     else:
         df = pd.DataFrame(rows)
+
     df.to_csv(CSV_PATH, index=False)
 
     print(f"\nResults saved to {CSV_PATH}")
+    print(f"Fold results saved to {fold_csv_path}")

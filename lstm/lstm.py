@@ -15,20 +15,20 @@ LSTM          = tf.keras.layers.LSTM
 class LSTMModel(NeuralTimeSeriesModel):
     def __init__(self,
                  n_lstm_layers=1,
-                 units_per_layer=[32],
-                 dropout_per_layer=[0.2],
-                 dense_units=32,
-                 learning_rate=0.001,
-                 X_scaler_class=RobustScaler,
-                 y_scaler_class=RobustScaler,
-                 batch_size=32,
+                 units_per_layer=[160],
+                 dropout_per_layer=[0.16485318326911472],
+                 dense_units=48,
+                 learning_rate=0.004992858865415641,
+                 X_scaler_class=MinMaxScaler,
+                 y_scaler_class=MinMaxScaler,
+                 batch_size=64,
                  epochs=None,
                  n_splits=None,
                  test_size=None,
                  activation=None,
                  baseline=17.120583933251048,
                  output_dir=None,
-                 time_steps=1):
+                 time_steps=6):
 
         date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         if output_dir is None:
@@ -115,7 +115,7 @@ class LSTMModel(NeuralTimeSeriesModel):
 
         model = self.build_model(X_cv_s.shape[-1])
         model.fit(X_cv_s, y_cv_s, epochs=self.epochs, batch_size=self.batch_size, verbose=0)
-
+        self.model = model
         pred = y_scaler.inverse_transform(model.predict(X_test_s))
         return pred, y_test[self.time_steps - 1:]
     
@@ -138,9 +138,11 @@ class LSTMModel(NeuralTimeSeriesModel):
         self.dropout_per_layer = [p[f"dropout_{i}"] for i in range(p["n_lstm_layers"])]
         self.time_steps = p["time_steps"]
 
-def lstm_run(X=None, y=None, n_splits=None, test_size=None, epochs=None, activation='relu', time_steps=168):
-    model = LSTMModel(epochs=epochs, n_splits=n_splits, test_size=test_size, activation=activation, time_steps=time_steps)
-    return model.run(X, y)
+def lstm_run(X=None, y=None, n_splits=None, test_size=None, epochs=None):
+    model = LSTMModel(epochs=epochs, n_splits=n_splits, test_size=test_size)
+    result = model.run(X, y)
+    model.plot_fold_predictions(X,y,2)
+    return result
 
 def lstm_optuna(X, y, n_splits=None, test_size=None, epochs=None, n_trials=None, activation='relu'):
     return LSTMModel(epochs=epochs, n_splits=n_splits,

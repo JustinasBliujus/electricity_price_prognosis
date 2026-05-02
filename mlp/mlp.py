@@ -13,9 +13,9 @@ Input      = tf.keras.layers.Input
 class MLPModel(NeuralTimeSeriesModel):
     def __init__(self, 
                  n_mlp_layers=1,
-                 units_per_layer=[32],
-                 dropout_per_layer=[0.2],
-                 learning_rate=0.001,
+                 units_per_layer=[128],
+                 dropout_per_layer=[0.2836132491974548],
+                 learning_rate=0.0012584314732730006,
                  activation='relu',
                  X_scaler_class=RobustScaler,
                  y_scaler_class=RobustScaler,
@@ -23,7 +23,7 @@ class MLPModel(NeuralTimeSeriesModel):
                  epochs=None,
                  n_splits=None,
                  test_size=None,
-                 baseline=18.411363238454967,
+                 baseline=36.09601750524018,
                  output_dir=None):
 
         date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -78,7 +78,9 @@ class MLPModel(NeuralTimeSeriesModel):
 
 def mlp_run(X=None, y=None, n_splits=None, test_size=None, epochs=None):
     model = MLPModel(epochs=epochs,n_splits=n_splits,test_size=test_size)
-    return model.run(X, y)
+    result = model.run(X,y)
+    model.plot_fold_predictions(X, y, fold_number=2)
+    return result
 
 def mlp_optuna(X, y, n_splits=None, test_size=None, epochs=None, n_trials=None, activation="relu"):
     return MLPModel(epochs=epochs, n_splits=n_splits,
