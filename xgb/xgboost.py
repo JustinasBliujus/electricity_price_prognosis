@@ -16,7 +16,6 @@ class XGBModel(TreeTimeSeriesModel):
                  fair_slope=16.969664412722437,
                  n_splits=None,
                  test_size=None,
-                 baseline=25.806314985359016,
                  output_dir=None):
         
         date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -30,9 +29,8 @@ class XGBModel(TreeTimeSeriesModel):
         os.makedirs(output_dir, exist_ok=True)
 
         super().__init__(n_splits=n_splits, test_size=test_size,
-                         output_dir=output_dir, baseline=baseline)
+                         output_dir=output_dir)
 
-        self.feature_names         = feature_names
         self.objective        = objective
         self.n_estimators     = n_estimators
         self.learning_rate    = learning_rate
@@ -91,13 +89,13 @@ class XGBModel(TreeTimeSeriesModel):
             self.fair_slope   = p.get("fair_slope", self.fair_slope)
 
 def xgb_run(X=None, y=None, n_splits=None, test_size=None):
-    model = XGBModel(n_splits=n_splits, test_size=test_size, feature_names = X.columns.tolist())
+    model = XGBModel(n_splits=n_splits, test_size=test_size)
     results = model.run(X.to_numpy(), y.to_numpy())
     model.plot_fold_predictions(X, y, fold_number=2)
     return results
 
 def xgb_optuna(X, y, n_splits=None, test_size=None, n_trials=None, objective="reg:fair"):
-    return XGBModel(n_splits=n_splits,test_size=test_size, objective=objective,feature_names = X.columns.tolist()).run_optuna(X, y, n_trials=n_trials)
+    return XGBModel(n_splits=n_splits,test_size=test_size, objective=objective).run_optuna(X, y, n_trials=n_trials)
 
 def fair_objective(y_true, y_pred, c):
     x = y_pred - y_true

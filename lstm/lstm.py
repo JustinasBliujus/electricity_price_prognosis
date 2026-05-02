@@ -26,7 +26,6 @@ class LSTMModel(NeuralTimeSeriesModel):
                  n_splits=None,
                  test_size=None,
                  activation=None,
-                 baseline=17.120583933251048,
                  output_dir=None,
                  time_steps=6):
 
@@ -41,7 +40,7 @@ class LSTMModel(NeuralTimeSeriesModel):
 
         super().__init__(X_scaler_class=X_scaler_class, y_scaler_class=y_scaler_class,
                          epochs=epochs, batch_size=batch_size, n_splits=n_splits,
-                         test_size=test_size, output_dir=output_dir, baseline=baseline)
+                         test_size=test_size, output_dir=output_dir)
 
         self.n_lstm_layers     = n_lstm_layers
         self.units_per_layer   = units_per_layer
@@ -121,13 +120,13 @@ class LSTMModel(NeuralTimeSeriesModel):
     
     
     def suggest_hyperparams(self, trial):
-        self.n_lstm_layers     = trial.suggest_int("n_lstm_layers", 1, 2)
+        self.n_lstm_layers     = trial.suggest_int("n_lstm_layers", 1, 3)
         self.batch_size        = trial.suggest_categorical("batch_size", [16, 32, 64])
         self.learning_rate     = trial.suggest_float("learning_rate", 0.001, 0.03, log=True)
         self.dense_units       = trial.suggest_int("dense_units", 16, 128, step=16)
         self.units_per_layer   = [trial.suggest_int(f"units_{i}", 32, 256, step=32) for i in range(self.n_lstm_layers)]
         self.dropout_per_layer = [trial.suggest_float(f"dropout_{i}", 0.1, 0.5) for i in range(self.n_lstm_layers)]
-        self.time_steps = trial.suggest_categorical("time_steps", [1,6,12,24])
+        self.time_steps = trial.suggest_categorical("time_steps", [1,6,12,24,48,168])
 
     def apply_best_params(self, p):
         self.n_lstm_layers     = p["n_lstm_layers"]

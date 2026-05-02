@@ -85,8 +85,8 @@ class LGBMModel(TreeTimeSeriesModel):
         if self.objective == "fair":
             self.fair_c = p["fair_c"]
 
-def lgbm_run(X=None, y=None, n_splits=None, test_size=None, objective='regression'):
-    model = LGBMModel(n_splits=n_splits, test_size=test_size, objective=objective)
+def lgbm_run(X=None, y=None, n_splits=None, test_size=None):
+    model = LGBMModel(n_splits=n_splits, test_size=test_size)
     print(model.__dict__)
     return model.run(X, y)
     

@@ -3,34 +3,6 @@ import numpy as np
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
-<<<<<<< HEAD
-def calculate_baseline_models(X,Y):
-    print("\nCreating baseline models")
-    
-    # Baseline 1: Last known value
-    baseline1_mae = mean_absolute_error(Y, X['lag_1'])
-    baseline1_rmse = np.sqrt(mean_squared_error(Y, X['lag_1']))
-    
-    # Baseline 2: Mean 
-    y_pred_mean = np.full_like(Y, Y.mean())
-    baseline2_mae = mean_absolute_error(Y, y_pred_mean)
-    baseline2_rmse = np.sqrt(mean_squared_error(Y, y_pred_mean))
-    
-    # Baseline 3: Rolling mean of last 24 hours
-    if 'rolling_mean_24' in X.columns:
-        baseline3_mae = mean_absolute_error(Y, X['rolling_mean_24'])
-        baseline3_rmse = np.sqrt(mean_squared_error(Y, X['rolling_mean_24']))
-    else:
-        baseline3_mae = baseline3_rmse = None
-        print("Baseline 3: rolling_mean_24 not available")
-    
-    return {
-        'last_value': (baseline1_mae, baseline1_rmse),
-        'mean': (baseline2_mae, baseline2_rmse),
-        'rolling_mean': (baseline3_mae, baseline3_rmse)
-    }
-    
-=======
 def calculate_baseline_models(X, y):
     print("\nCreating baseline models")
 
@@ -43,6 +15,7 @@ def calculate_baseline_models(X, y):
         "cv": cv_results,
         "test": test_results
     }
+    
 def split(X, y, test_size):
         split_idx = int(len(X) * (1 - test_size))
         return X[:split_idx], X[split_idx:], y[:split_idx], y[split_idx:]
@@ -116,4 +89,3 @@ def baseline_final(X_train, y_train, X_test, y_test, lag1_index, roll24_index):
         "mean":  (mean_rmse, mean_mae),
         "rolling_mean_24": (roll24_rmse, roll24_mae),
     }
->>>>>>> 6310fa8 (changes from laptop)

@@ -30,28 +30,6 @@ def main():
     #graphs_for_report()
     #generate_all_plots(df_clean, X, y_train, y_test, folder_path_visualizations)
     #get_baselines(X, y, y_train, y_test, X_train, X_test)
-
-<<<<<<< HEAD
-    #mlp_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS,activation="tanh")
-    #mlp_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS,activation="sigmoid")
-    #lgbm_run(X.to_numpy(),y.to_numpy(),N_SPLITS,TEST_SIZE)
-    #lstm_run(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS)
-    
-    #lstm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS, activation="relu")
-    #lstm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS, activation="linear")
-    #lstm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS, activation="tanh")
-    lstm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS, activation="sigmoid")
-    #lstm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS, activation="sigmoid") 
-
-    #TODO LSTM time step?
-    #
-    #TODO CV mse, mse mae rMae on test?
-    
-    #TODO do feature importance analysis SHAP or inner models feature importance
-    #TODO check when do models fail to prognose, hours,days...
-    #TODO model ensemble
-    
-=======
     results = lstm_run(X.to_numpy(), y.to_numpy(),N_SPLITS,TEST_SIZE,EPOCHS)
     model = results["model"].model
     plot_importance_lstm(model, X.columns.tolist(), X, os.path.dirname(os.path.abspath(__file__)))
@@ -63,10 +41,7 @@ def main():
     #plot_rmse()
     #plot_mae()
     #plot_all_models(X)
-
->>>>>>> 6310fa8 (changes from laptop)
     #TODO do t+24 models + ensemble
-
     #ataskaitoj:
     # 2 foldo analize ?
     # rmse ir mae atvirksiai, kodel?

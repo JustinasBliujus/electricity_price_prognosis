@@ -8,15 +8,13 @@ import optuna.visualization.matplotlib as optuna_plot
 import matplotlib.pyplot as plt
 
 class BaseTimeSeriesModel:
-    def __init__(self, feature_names=None, output_dir=None, n_splits=None, test_size=None, baseline=None):
+    def __init__(self, feature_names=None, output_dir=None, n_splits=None, test_size=None):
         self.n_splits  = n_splits
         self.test_size = test_size
         self.feature_names = feature_names
         self.output_dir    = output_dir
         self.results_dir = os.path.join(self.output_dir, "results")
         self.optuna_dir = os.path.join(self.output_dir, "optuna_results")
-        self.histories = []
-        self.baseline = baseline
 
         os.makedirs(self.output_dir, exist_ok=True)
         os.makedirs(self.results_dir, exist_ok=True)
@@ -46,11 +44,9 @@ class BaseTimeSeriesModel:
                 
             fold_rmse = np.sqrt(mean_squared_error(actual, pred))
             fold_mae = mean_absolute_error(actual, pred)
-            fold_rmae = fold_mae / self.baseline
 
             print(f"Fold {fold+1} RMSE: {fold_rmse:.4f}")
             print(f"Fold {fold+1} MAE: {fold_mae:.4f}")
-            print(f"Fold {fold+1} rMAE: {fold_rmae:.4f}")
 
             results.append({
                 "fold": fold + 1,
@@ -66,18 +62,15 @@ class BaseTimeSeriesModel:
         
         test_rmse = np.sqrt(mean_squared_error(actual, pred))
         test_mae = mean_absolute_error(actual, pred)
-        test_rmae = test_mae / self.baseline
 
         print(f"Test RMSE: {test_rmse:.4f}")
         print(f"Test MAE: {test_mae:.4f}")
-        print(f"Test rMAE: {test_rmae:.4f}")
 
         results.append({
             "fold": "test",
             "type": "test",
             "rmse": test_rmse,
             "mae": test_mae,
-            "rmae": test_rmae
         })
 
         cv_results    = [r for r in results if r["type"] == "cv"]
@@ -97,7 +90,6 @@ class BaseTimeSeriesModel:
         return {
             "test_rmse":    test_rmse,
             "test_mae":     test_mae,
-            "test_rmae":    test_rmae,
             "mean_cv_rmse": mean_cv_rmse,
             "mean_cv_mae":  mean_cv_mae,
             "mean_cv_rmae": mean_cv_rmae,
