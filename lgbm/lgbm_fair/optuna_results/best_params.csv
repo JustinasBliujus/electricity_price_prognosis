@@ -1,0 +1,2 @@
+n_estimators,learning_rate,max_depth,num_leaves,feature_fraction,min_child_samples,fair_c,cv_rmse,test_rmse
+932,0.008722598927525057,9,43,0.5399342465850842,29,38.04220736311391,35.33664709193319,29.264205975866286

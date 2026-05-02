@@ -1,0 +1,2 @@
+n_lstm_layers,batch_size,learning_rate,dense_units,units_0,dropout_0,time_steps,cv_rmse,trial
+1,16,0.001005997451224857,48,224,0.13874529043624628,24,31.895980563538295,5

@@ -124,8 +124,11 @@ class BaseTimeSeriesModel:
                 fold_rmses.append(np.sqrt(mean_squared_error(actual, pred)))
             return np.mean(fold_rmses)
 
+        live_best_path = os.path.join(self.optuna_dir, "best_params_live.csv")
+        save_callback = SaveBestParamsCallback(live_best_path)
+
         study = optuna.create_study(direction="minimize")
-        study.optimize(objective, n_trials=n_trials,callbacks=[early_stop])
+        study.optimize(objective, n_trials=n_trials,callbacks=[early_stop,save_callback])
         print("Best params:", study.best_params)
         print(f"Best CV RMSE: {study.best_value:.4f}")
 
@@ -185,3 +188,20 @@ class EarlyStoppingCallback:
         if self.no_improve_count >= self.patience:
             print(f"Stopping early after {self.patience} trials without improvement.")
             study.stop()
+            
+class SaveBestParamsCallback:
+    def __init__(self, save_path):
+        self.save_path = save_path
+        self.best_value = None
+
+    def __call__(self, study, trial):
+        if self.best_value is None or study.best_value < self.best_value:
+            self.best_value = study.best_value
+
+            df = pd.DataFrame([{
+                **study.best_params,
+                "cv_rmse": study.best_value,
+                "trial": trial.number
+            }])
+
+            df.to_csv(self.save_path, index=False)

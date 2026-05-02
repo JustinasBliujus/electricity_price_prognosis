@@ -121,13 +121,13 @@ class LSTMModel(NeuralTimeSeriesModel):
     
     
     def suggest_hyperparams(self, trial):
-        self.n_lstm_layers     = trial.suggest_int("n_lstm_layers", 1, 3)
+        self.n_lstm_layers     = trial.suggest_int("n_lstm_layers", 1, 2)
         self.batch_size        = trial.suggest_categorical("batch_size", [16, 32, 64])
         self.learning_rate     = trial.suggest_float("learning_rate", 0.001, 0.03, log=True)
         self.dense_units       = trial.suggest_int("dense_units", 16, 128, step=16)
         self.units_per_layer   = [trial.suggest_int(f"units_{i}", 32, 256, step=32) for i in range(self.n_lstm_layers)]
         self.dropout_per_layer = [trial.suggest_float(f"dropout_{i}", 0.1, 0.5) for i in range(self.n_lstm_layers)]
-        self.time_steps = trial.suggest_categorical("time_steps", [1,6,12,24,48,168])
+        self.time_steps = trial.suggest_categorical("time_steps", [1,6,12,24])
 
     def apply_best_params(self, p):
         self.n_lstm_layers     = p["n_lstm_layers"]

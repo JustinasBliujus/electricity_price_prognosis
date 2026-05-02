@@ -52,8 +52,8 @@ class NeuralTimeSeriesModel(BaseTimeSeriesModel):
         X_scaler = self.X_scaler_class()
         y_scaler = self.y_scaler_class()
 
-        X_cv_s   = self.reshape_input(X_scaler.fit_transform(X_cv))
-        X_test_s = self.reshape_input(X_scaler.transform(X_test))
+        X_cv_s   = X_scaler.fit_transform(X_cv)
+        X_test_s = X_scaler.transform(X_test)
         y_cv_s   = y_scaler.fit_transform(y_cv.reshape(-1, 1)).flatten()
 
         model = self.build_model(X_cv_s.shape[-1])

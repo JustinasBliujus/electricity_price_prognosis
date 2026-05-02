@@ -28,11 +28,12 @@ def create_lag_features(df, lag_hours=[1, 2, 3, 6, 12, 24, 48, 96, 168]):
     print(df.head(10))
     return df
 
-def create_rolling_features(df, windows=[6, 12, 24]):
+def create_rolling_features(df, windows=[6, 12, 24, 48, 168]):
     print("CREATING ROLLING FEATURES:")
+    shifted = df['value'].shift(1)
     for window in windows:
-        df[f'rolling_mean_{window}'] = df['value'].rolling(window=window).mean()
-        df[f'rolling_std_{window}'] = df['value'].rolling(window=window).std()
+        df[f'rolling_mean_{window}'] = shifted.rolling(window=window).mean()
+        df[f'rolling_std_{window}'] = shifted.rolling(window=window).std()
 
     df = remove_nan_rows(df)
     print("\nDATA WITH ROLLING FEATURES AND REMOVING NaN (first 10 rows):")

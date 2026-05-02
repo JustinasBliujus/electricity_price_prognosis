@@ -16,7 +16,7 @@ class XGBModel(TreeTimeSeriesModel):
                  fair_slope=1,
                  n_splits=None,
                  test_size=None,
-                 baseline=25.806314985359016,
+                 baseline=35.97867655711516,
                  output_dir=None):
         
         date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -68,15 +68,15 @@ class XGBModel(TreeTimeSeriesModel):
         return xgboost.XGBRegressor(**params)
 
     def suggest_hyperparams(self, trial):
-        self.n_estimators     = trial.suggest_int("n_estimators", 100, 1000, step=100)
+        self.n_estimators     = trial.suggest_int("n_estimators", 100, 1500, step=100)
         self.learning_rate    = trial.suggest_float("learning_rate", 0.001, 0.3, log=True)
         self.max_depth        = trial.suggest_int("max_depth", 3, 10)
         self.colsample_bytree = trial.suggest_float("colsample_bytree", 0.5, 1.0)
         self.min_child_weight = trial.suggest_int("min_child_weight", 1, 100)
         if(self.objective == "reg:pseudohubererror"):
-            self.huber_slope      = trial.suggest_float("huber_slope", 2, 60, log=True)
+            self.huber_slope      = trial.suggest_float("huber_slope", 25, 110, log=True)
         if self.objective == "reg:fair":
-            self.fair_slope   = trial.suggest_float("fair_slope", 2, 60, log=True)
+            self.fair_slope   = trial.suggest_float("fair_slope", 25, 110, log=True)
 
     def apply_best_params(self, p):
         self.n_estimators     = p["n_estimators"]

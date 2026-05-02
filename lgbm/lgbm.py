@@ -5,14 +5,14 @@ from datetime import datetime
 
 class LGBMModel(TreeTimeSeriesModel):
     def __init__(self,
-                 objective='regression',
-                 n_estimators=500,
-                 learning_rate=0.01,
-                 max_depth=6,
-                 num_leaves=32,
-                 feature_fraction=0.8,
-                 min_child_samples=500,
-                 alpha=15,
+                 objective='huber',
+                 n_estimators=974,
+                 learning_rate=0.009069734227624547,
+                 max_depth=9,
+                 num_leaves=76,
+                 feature_fraction=0.7733268704526309,
+                 min_child_samples=40,
+                 alpha=59.96250921401762,
                  fair_c=7,
                  n_splits=None,
                  test_size=None,
@@ -62,16 +62,16 @@ class LGBMModel(TreeTimeSeriesModel):
         )
 
     def suggest_hyperparams(self, trial):
-        self.n_estimators      = trial.suggest_int("n_estimators", 100, 1000)
+        self.n_estimators      = trial.suggest_int("n_estimators", 100, 1500)
         self.learning_rate     = trial.suggest_float("learning_rate", 0.001, 0.3, log=True)
         self.max_depth         = trial.suggest_int("max_depth", 3, 10)
         self.num_leaves        = trial.suggest_int("num_leaves", 15, 110)
         self.feature_fraction  = trial.suggest_float("feature_fraction", 0.4, 1.0)
         self.min_child_samples = trial.suggest_int("min_child_samples", 5, 100)
         if self.objective == "huber":
-            self.alpha  = trial.suggest_float("alpha", 2.0, 60.0, log=True)
+            self.alpha  = trial.suggest_float("alpha", 25, 110, log=True)
         if self.objective == "fair":
-            self.fair_c = trial.suggest_float("fair_c", 2.0, 60.0, log=True)
+            self.fair_c = trial.suggest_float("fair_c", 25, 110, log=True)
 
     def apply_best_params(self, p):
         self.n_estimators      = p["n_estimators"]
@@ -85,8 +85,8 @@ class LGBMModel(TreeTimeSeriesModel):
         if self.objective == "fair":
             self.fair_c = p["fair_c"]
 
-def lgbm_run(X=None, y=None, n_splits=None, test_size=None, objective='regression'):
-    model = LGBMModel(n_splits=n_splits, test_size=test_size, objective=objective)
+def lgbm_run(X=None, y=None, n_splits=None, test_size=None):
+    model = LGBMModel(n_splits=n_splits, test_size=test_size)
     print(model.__dict__)
     return model.run(X, y)
     

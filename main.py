@@ -20,33 +20,23 @@ N_TRIALS = 1000
 
 def main():
     df_clean, X, y, X_train, X_test, y_train, y_test, folder_path_visualizations = prepare_data()
-    #y_pred_last = y_test.shift(1).fillna(y_train.iloc[-1])
-    #residuals = np.abs(y_test - y_pred_last)
+    #residuals = np.abs(y_train - X_train["lag_1"])
     #print(np.percentile(residuals, [25, 50, 75, 90, 95, 99]))
     #[  2.23     8.77    27.82    54.542   76.894  137.4712]
 
     #generate_all_plots(df_clean, X, y_train, y_test, folder_path_visualizations)
     #get_baselines(X, y, y_train, y_test, X_train, X_test)
 
-    #lgbm_run(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE)
-    #lgbm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, n_trials=N_TRIALS, objective="fair")
-    #plot_optuna_results("lgbm/lgbm/optuna_results/optuna_trials.csv")
-
-    #xgb_run(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE)
-    #xgb_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, n_trials=N_TRIALS,objective="reg:pseudohubererror")
-
-    #mlp_run(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS)
-    #mlp_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS,activation="relu")
-    #mlp_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS,activation="linear")
     #mlp_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS,activation="tanh")
     #mlp_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS,activation="sigmoid")
-    
+    #lgbm_run(X.to_numpy(),y.to_numpy(),N_SPLITS,TEST_SIZE)
     #lstm_run(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS)
     
-    lstm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS, activation="relu")
+    #lstm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS, activation="relu")
     #lstm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS, activation="linear")
     #lstm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS, activation="tanh")
-    #lstm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS, activation="sigmoid")
+    lstm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS, activation="sigmoid")
+    #lstm_optuna(X=X.to_numpy(), y=y.to_numpy(), n_splits=N_SPLITS, test_size=TEST_SIZE, epochs=EPOCHS, n_trials=N_TRIALS, activation="sigmoid") 
 
     #TODO LSTM time step?
     #
