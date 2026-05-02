@@ -118,7 +118,6 @@ class LSTMModel(NeuralTimeSeriesModel):
         pred = y_scaler.inverse_transform(model.predict(X_test_s))
         return pred, y_test[self.time_steps - 1:]
     
-    
     def suggest_hyperparams(self, trial):
         self.n_lstm_layers     = trial.suggest_int("n_lstm_layers", 1, 3)
         self.batch_size        = trial.suggest_categorical("batch_size", [16, 32, 64])

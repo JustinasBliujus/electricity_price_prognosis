@@ -53,7 +53,6 @@ class BaseTimeSeriesModel:
                 "type": "cv",
                 "rmse": fold_rmse,
                 "mae": fold_mae,
-                "rmae": fold_rmae
             })
 
         pred, actual = self.fit_final(X_cv, y_cv, X_test, y_test)
@@ -76,7 +75,6 @@ class BaseTimeSeriesModel:
         cv_results    = [r for r in results if r["type"] == "cv"]
         mean_cv_rmse  = np.mean([r["rmse"] for r in cv_results])
         mean_cv_mae   = np.mean([r["mae"]  for r in cv_results])
-        mean_cv_rmae  = np.mean([r["rmae"] for r in cv_results])
         
         df = pd.DataFrame(results)
         df.to_csv(os.path.join(self.results_dir, "metrics.csv"), index=False)
@@ -92,7 +90,6 @@ class BaseTimeSeriesModel:
             "test_mae":     test_mae,
             "mean_cv_rmse": mean_cv_rmse,
             "mean_cv_mae":  mean_cv_mae,
-            "mean_cv_rmae": mean_cv_rmae,
             "predictions":  pred,
             "actuals":      actual,
             "results":      results,

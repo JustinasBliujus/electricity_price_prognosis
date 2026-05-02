@@ -11,14 +11,14 @@ class NeuralTimeSeriesModel(BaseTimeSeriesModel):
                  batch_size=None,
                  n_splits=None,
                  test_size=None, 
-                 output_dir=None,
-                 baseline=None):
+                 output_dir=None
+                 ):
         
         super().__init__(feature_names=None,
                          n_splits=n_splits, 
                          test_size=test_size,
-                         output_dir=output_dir,
-                         baseline=baseline)
+                         output_dir=output_dir
+                         )
         
         self.X_scaler_class = X_scaler_class
         self.y_scaler_class = y_scaler_class
