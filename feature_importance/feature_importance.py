@@ -62,14 +62,12 @@ def plot_importance(model, feature_names, X, output_dir):
         plt.close()
 
 def plot_importance_mlp(model, feature_names, X, output_dir):
-    X_sample_df = pd.DataFrame(shap.sample(X, 50), columns=feature_names).rename(columns=FEATURE_NAMES)
-
-    background = shap.sample(X, 150)
+    background = shap.sample(X, 500)
     
     predict_fn = lambda x: model.predict(x).ravel()
     explainer = shap.KernelExplainer(predict_fn, background)
 
-    X_sample = shap.sample(X, 150)
+    X_sample = shap.sample(X, 1200)
     X_sample_df = pd.DataFrame(X_sample, columns=feature_names).rename(columns=FEATURE_NAMES)
     
     shap_array = explainer.shap_values(X_sample)  
@@ -96,10 +94,10 @@ def plot_importance_lstm(model, feature_names, X, output_dir, time_steps=6):
 
     rng = np.random.default_rng(42)
 
-    indices = rng.choice(len(X_seq), size=250, replace=False)
+    indices = rng.choice(len(X_seq), size=300, replace=False)
 
-    background = X_seq[indices[:150]]
-    X_sample   = X_seq[indices[150:250]] 
+    background = X_seq[indices[:120]]
+    X_sample   = X_seq[indices[120:300]] 
 
     background_flat = background.reshape(background.shape[0], -1)
     X_sample_flat   = X_sample.reshape(X_sample.shape[0], -1)
@@ -111,8 +109,11 @@ def plot_importance_lstm(model, feature_names, X, output_dir, time_steps=6):
     explainer  = shap.KernelExplainer(predict_fn, background_flat)
     shap_raw   = explainer.shap_values(X_sample_flat)
     shap_3d      = shap_raw.reshape(len(X_sample), time_steps, len(feature_names))
-    shap_by_feat = np.mean(np.abs(shap_3d), axis=1)
-    
+    max = np.max(X["lag_1"])
+    min = np.min(X["lag_1"])
+    price_range = max - min
+    shap_by_feat = np.mean(np.abs(shap_3d), axis=1) * price_range
+    shap_for_scatter = np.mean(shap_3d, axis=1)  * price_range
     X_sample_last = X_sample[:, -1, :]
     X_sample_df   = pd.DataFrame(X_sample_last, columns=feature_names).rename(columns=FEATURE_NAMES)
 
@@ -125,7 +126,7 @@ def plot_importance_lstm(model, feature_names, X, output_dir, time_steps=6):
     for feature in ["lag_1", "lag_3", "lag_24", "lag_6"]:
         idx = list(feature_names).index(feature)
         plt.figure()
-        shap.dependence_plot(idx, shap_by_feat, X_sample_df, interaction_index=None, show=False)
+        shap.dependence_plot(idx, shap_for_scatter, X_sample_df, interaction_index=None, show=False)
         plt.ylabel(f"SHAP reikšmė")
         plt.savefig(os.path.join(output_dir, f"shap_scatter_{feature}.png"), dpi=150, bbox_inches="tight")
         plt.close()

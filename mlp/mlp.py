@@ -23,7 +23,6 @@ class MLPModel(NeuralTimeSeriesModel):
                  epochs=None,
                  n_splits=None,
                  test_size=None,
-                 baseline=36.09601750524018,
                  output_dir=None):
 
         date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -37,7 +36,7 @@ class MLPModel(NeuralTimeSeriesModel):
         os.makedirs(output_dir, exist_ok=True)
 
         super().__init__(X_scaler_class=X_scaler_class, y_scaler_class=y_scaler_class,
-                 epochs=epochs, batch_size=batch_size,n_splits=n_splits, test_size=test_size, output_dir=output_dir, baseline=baseline)
+                 epochs=epochs, batch_size=batch_size,n_splits=n_splits, test_size=test_size, output_dir=output_dir)
         
         self.n_mlp_layers     = n_mlp_layers
         self.units_per_layer  = units_per_layer

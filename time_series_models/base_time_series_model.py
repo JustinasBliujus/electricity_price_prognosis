@@ -190,7 +190,12 @@ class BaseTimeSeriesModel:
         path = os.path.join(self.results_dir, f"fold_{fold_number}_predictions.png")
         plt.savefig(path, dpi=150)
         print(f"Fold predictions saved to {path}")
-        plt.close()
+        plt.close() 
+        
+        df = pd.DataFrame({"actual": actual, "predicted": pred})
+        csv_path = os.path.join(self.results_dir, f"fold_{fold_number}_predictions.csv")
+        df.to_csv(csv_path, index=False)
+        print(f"Fold predictions saved to {csv_path}")
     
 class EarlyStoppingCallback:
     def __init__(self, patience=100):

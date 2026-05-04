@@ -6,17 +6,16 @@ from datetime import datetime
 class LGBMModel(TreeTimeSeriesModel):
     def __init__(self,
                  objective='regression',
-                 n_estimators=500,
-                 learning_rate=0.01,
-                 max_depth=6,
-                 num_leaves=32,
-                 feature_fraction=0.8,
-                 min_child_samples=500,
-                 alpha=15,
+                 n_estimators=900,
+                 learning_rate=0.009069734227624547,
+                 max_depth=9,
+                 num_leaves=76,
+                 feature_fraction=0.7733268704526309,
+                 min_child_samples=40,
+                 alpha=59.96250921401762,
                  fair_c=7,
                  n_splits=None,
                  test_size=None,
-                 baseline=36.09601750524018,
                  output_dir=None):
 
         date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -30,7 +29,7 @@ class LGBMModel(TreeTimeSeriesModel):
         os.makedirs(output_dir, exist_ok=True)
 
         super().__init__(n_splits=n_splits, test_size=test_size,
-                         output_dir=output_dir, baseline=baseline)
+                         output_dir=output_dir)
 
         self.objective         = objective
         self.n_estimators      = n_estimators
@@ -87,8 +86,9 @@ class LGBMModel(TreeTimeSeriesModel):
 
 def lgbm_run(X=None, y=None, n_splits=None, test_size=None):
     model = LGBMModel(n_splits=n_splits, test_size=test_size)
-    print(model.__dict__)
-    return model.run(X, y)
+    result = model.run(X.to_numpy(), y.to_numpy())
+    model.plot_fold_predictions(X, y, fold_number=2)
+    return result
     
 
 def lgbm_optuna(X, y, n_splits=None, test_size=None, n_trials=None, objective='huber'):

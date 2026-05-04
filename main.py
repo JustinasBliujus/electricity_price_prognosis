@@ -12,8 +12,9 @@ import numpy as np
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 import os
 import matplotlib.pyplot as plt
-
+from spikes.spike_analysis import plot_models_side_by_side
 #pip install tensorflow numpy matplotlib lightgbm xgboost pandas optuna scikit-learn seaborn plotly kaleido statsmodels shap
+import pandas as pd
 
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "1"
 
@@ -30,10 +31,6 @@ def main():
 
     #generate_all_plots(df_clean, X, y_train, y_test, folder_path_visualizations)
     #get_baselines(X, y, y_train, y_test, X_train, X_test)
-    
-    results = lstm_run(X.to_numpy(), y.to_numpy(),N_SPLITS,TEST_SIZE,EPOCHS)
-    model = results["model"].model
-    plot_importance_lstm(model, X.columns.tolist(), X, os.path.dirname(os.path.abspath(__file__)))
 
     #plot_baseline_fold2(X,y,N_SPLITS,TEST_SIZE)
     #aggregate("lstm")
