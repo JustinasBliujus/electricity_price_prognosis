@@ -1,0 +1,5 @@
+model,avg_weekday_mae,avg_weekend_mae
+LightGBM,18.0816,12.1711
+XGBoost,18.2145,12.3038
+Daugiasluoksnis perceptronas,19.4129,12.5443
+Ilgos trumpalaikės atminties tinklas,20.1348,12.9808

@@ -1,0 +1,96 @@
+from time_series_models.tree_time_series_model import TreeTimeSeriesModel
+import lightgbm as lgbm
+import os
+from datetime import datetime
+
+class LGBMModel(TreeTimeSeriesModel):
+    def __init__(self,
+                 objective='huber',
+                 n_estimators=974,
+                 learning_rate=0.009069734227624547,
+                 max_depth=9,
+                 num_leaves=76,
+                 feature_fraction=0.7733268704526309,
+                 min_child_samples=40,
+                 alpha=59.96250921401762,
+                 fair_c=7,
+                 n_splits=None,
+                 test_size=None,
+                 output_dir=None):
+
+        date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+        if output_dir is None:
+            output_dir = os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                f"lgbm_{date_str}"
+            )
+            
+        os.makedirs(output_dir, exist_ok=True)
+
+        super().__init__(n_splits=n_splits, test_size=test_size,
+                         output_dir=output_dir)
+
+        self.objective         = objective
+        self.n_estimators      = n_estimators
+        self.learning_rate     = learning_rate
+        self.max_depth         = max_depth
+        self.num_leaves        = num_leaves
+        self.feature_fraction  = feature_fraction
+        self.min_child_samples = min_child_samples
+        self.alpha             = alpha
+        self.fair_c            = fair_c
+
+    def build_model(self, n_features=None):
+        return self.build_lightgbm()
+
+    def build_lightgbm(self):
+        return lgbm.LGBMRegressor(
+            n_estimators=self.n_estimators,
+            learning_rate=self.learning_rate,
+            max_depth=self.max_depth,
+            num_leaves=self.num_leaves,
+            feature_fraction=self.feature_fraction,
+            min_child_samples=self.min_child_samples,
+            objective=self.objective,
+            alpha=self.alpha,
+            fair_c=self.fair_c,
+            random_state=42,
+            n_jobs=-1,
+            verbose=-1
+        )
+
+    def suggest_hyperparams(self, trial):
+        self.n_estimators      = trial.suggest_int("n_estimators", 100, 1000)
+        self.learning_rate     = trial.suggest_float("learning_rate", 0.0001, 0.3, log=True)
+        self.max_depth         = trial.suggest_int("max_depth", 3, 10)
+        self.num_leaves        = trial.suggest_int("num_leaves", 15, 150)
+        self.feature_fraction  = trial.suggest_float("feature_fraction", 0.4, 1.0)
+        self.min_child_samples = trial.suggest_int("min_child_samples", 5, 150)
+        if self.objective == "huber":
+            self.alpha  = trial.suggest_float("alpha", 25, 110, log=True)
+        if self.objective == "fair":
+            self.fair_c = trial.suggest_float("fair_c", 25, 110, log=True)
+
+    def apply_best_params(self, p):
+        self.n_estimators      = p["n_estimators"]
+        self.learning_rate     = p["learning_rate"]
+        self.max_depth         = p["max_depth"]
+        self.num_leaves        = p["num_leaves"]
+        self.feature_fraction  = p["feature_fraction"]
+        self.min_child_samples = p["min_child_samples"]
+        if self.objective == "huber":
+            self.alpha  = p["alpha"]
+        if self.objective == "fair":
+            self.fair_c = p["fair_c"]
+
+def lgbm_run(X=None, y=None, n_splits=None, test_size=None):
+    model = LGBMModel(n_splits=n_splits, test_size=test_size)
+    result = model.run(X.to_numpy(), y.to_numpy())
+    model.plot_fold_predictions(X, y, fold_number=2)
+    return result
+    
+
+def lgbm_optuna(X, y, n_splits=None, test_size=None, n_trials=None, objective='huber'):
+    LGBMModel(n_splits=n_splits,
+                     test_size=test_size, objective=objective).run_optuna(X.to_numpy(), y.to_numpy(), n_trials=n_trials)

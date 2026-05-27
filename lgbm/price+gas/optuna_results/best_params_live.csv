@@ -1,0 +1,2 @@
+n_estimators,learning_rate,max_depth,num_leaves,feature_fraction,min_child_samples,alpha,cv_rmse,trial
+448,0.013440735993657091,7,42,0.9683379824519768,29,84.71628180657441,35.4277954426679,247

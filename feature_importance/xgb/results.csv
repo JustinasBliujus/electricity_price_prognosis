@@ -1,0 +1,28 @@
+feature,mean_abs_shap
+Atsilikimas 1h,33.766365
+Valanda,6.097839
+Atsilikimas 2h,3.8914015
+Atsilikimas 24h,3.8568094
+Atsilikimas 168h,1.9793388
+Slankusis vidurkis 24h,1.5355093
+Atsilikimas 48h,1.5069861
+Savaitės diena,1.3231107
+Atsilikimas 3h,1.2932557
+Atsilikimas 96h,1.0076156
+Slankusis st. nuokrypis 12h,0.96112
+Slankusis vidurkis 168h,0.94607395
+Slankusis vidurkis 12h,0.8947463
+Slankusis vidurkis 6h,0.87864727
+Metų diena,0.7383494
+Atsilikimas 12h,0.68585044
+Slankusis vidurkis 48h,0.5456701
+Slankusis st. nuokrypis 6h,0.5214712
+Slankusis st. nuokrypis 48h,0.4753386
+Atsilikimas 6h,0.4666665
+Slankusis st. nuokrypis 24h,0.37615588
+Slankusis st. nuokrypis 168h,0.27985287
+Mėnuo,0.1710888
+Diena,0.12614398
+Savaitgalis,0.12537456
+Metai,0.089242905
+Ketvirtis,0.010834794

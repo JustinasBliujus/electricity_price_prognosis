@@ -1,0 +1,2 @@
+n_mlp_layers,batch_size,learning_rate,units_0,units_1,dropout_0,dropout_1,cv_rmse,trial
+2,16,0.0020473293817150004,256,96,0.35002008055663647,0.04551383816815287,30.34518189980136,90

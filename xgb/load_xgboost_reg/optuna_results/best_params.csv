@@ -1,0 +1,2 @@
+n_estimators,learning_rate,max_depth,colsample_bytree,min_child_weight,cv_rmse,test_rmse
+900,0.007487638423012632,9,0.9129051061252984,40,35.57413794191873,28.83630316823302
